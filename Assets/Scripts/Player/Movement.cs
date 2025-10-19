@@ -52,6 +52,9 @@ namespace Player
         public float moveCastRadius = 1f;
         public float groundOverlapRadius = 0.3f;
         [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private float stunVelocityMin = 1f;
+        [SerializeField] private float stunDuration;
+        float currentStun;
 
         
 
@@ -66,6 +69,17 @@ namespace Player
 
 
        short moveDirection;
+
+        public bool IsFalling()
+        {
+            return !grounded;
+        }
+
+        public bool IsStunned(out float stunTimeRemaining)
+        {
+            stunTimeRemaining = currentStun;
+            return stunDuration > 0;
+        }
 
 
         private void OnEnable()
@@ -92,9 +106,12 @@ namespace Player
 
             grounded = Physics.SphereCast(transform.position + new Vector3(0, playerHeight, 0), groundOverlapRadius, Vector3.down,
              out RaycastHit hit, playerHeight + (grounded ? slopeLenience : 0f), groundLayer);
-
+            
             if (grounded)
             {
+                if (fallVelocity > stunVelocityMin)
+                    currentStun = stunDuration;
+
                 fallVelocity = 0;
                 transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
             }
@@ -105,8 +122,9 @@ namespace Player
             }
 
             //move at the end if input buffered
-            if (inputBuffered != Vector2Int.zero && Time.time - moveTime > lastMoveTime)
+            if (inputBuffered != Vector2Int.zero && Time.time > lastMoveTime + moveTime && currentStun <= 0)
             {
+                //print((inputBuffered != Vector2Int.zero) + " : " + (Time.time > lastMoveTime + moveTime) + " : " + (currentStun));
                 if (inputBuffered.x != 0)
                     OnRotate((short)inputBuffered.x);
                 else
@@ -145,6 +163,9 @@ namespace Player
                 ViewBob(factor);
                 hudBobber.Bob(factor, lastMoveWasRotation, lastMoveWasRotation ? moveDirection : xBobDir);
             }
+
+            currentStun = Mathf.Max(0, currentStun - Time.deltaTime);
+
         }
 
         
@@ -217,14 +238,18 @@ namespace Player
 
         private bool CanMove(Vector2Int dir)
         {
-            if (Time.time < lastMoveTime + moveTime)
+            float nextMoveTime = lastMoveTime + moveTime + (currentStun > 0 ? stunDuration : 0);
+
+            if (Time.time < nextMoveTime)
             {
-                if (Time.time + inputBufferTime > lastMoveTime + moveTime)
+                if (Time.time + inputBufferTime > nextMoveTime)
                 {
                     inputBuffered = dir;
                 }
                 return false;
             }
+            if (currentStun > 0)
+                return false;
             if (!grounded) return false;
 
             if (moveCastPoint == null)
