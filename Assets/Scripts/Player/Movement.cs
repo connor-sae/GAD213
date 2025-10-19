@@ -1,8 +1,4 @@
-using Unity.VisualScripting;
-using UnityEditor.XR;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 
 namespace Player
@@ -41,6 +37,7 @@ namespace Player
 
         public ErpCurve2 viewBobCurves;
         public Vector2 viewBobMult;
+        public HudBobbing hudBobber;
 
 
         [Space]
@@ -68,7 +65,7 @@ namespace Player
         float lastRotation;
 
 
-       
+       short moveDirection;
 
 
         private void OnEnable()
@@ -143,10 +140,13 @@ namespace Player
 
             }
             
-            ViewBob(factor);
+            if(factor < 1)
+            {
+                ViewBob(factor);
+                hudBobber.Bob(factor, lastMoveWasRotation, lastMoveWasRotation ? moveDirection : xBobDir);
+            }
         }
 
-        //private <T> ErpCurve2()
         
         
 
@@ -180,6 +180,7 @@ namespace Player
             lastMoveTime = Time.time;
             xBobDir *= -1;
             lastMoveWasRotation = false;
+            moveDirection = dir;
 
         }
 
@@ -211,6 +212,7 @@ namespace Player
             lastMoveTime = Time.time;
             xBobDir *= -1;
             lastMoveWasRotation = true;
+            moveDirection = dir;
         }
 
         private bool CanMove(Vector2Int dir)

@@ -1,0 +1,33 @@
+using UnityEngine;
+
+public class HudBobbing : MonoBehaviour
+{
+     [SerializeField] private AnimationCurve xBobEffector;
+     [SerializeField] private AnimationCurve yBobEffector;
+     [SerializeField] private Vector2 bobMax;
+     [SerializeField] private AnimationCurve rotationEffector;
+     [SerializeField] private float rotationMax;
+    [SerializeField] private Transform pistonTrans;
+     [SerializeField] private AnimationCurve pistonMovement;
+     
+
+
+
+     public void Bob(float factor, bool isRotation, short moveDirection)
+     {
+        float xPos = xBobEffector.Evaluate(factor) * moveDirection * bobMax.x;
+        float yPos = yBobEffector.Evaluate(factor) * bobMax.y;
+        //print(moveDirection);
+
+        transform.localPosition = new Vector3(xPos, yPos, 0);
+
+        if(isRotation)
+        {
+            float yRot = rotationEffector.Evaluate(factor) * moveDirection * rotationMax;
+
+            transform.localRotation = Quaternion.Euler(0, yRot, 0);
+        }
+
+        pistonTrans.localPosition = Vector3.forward * pistonMovement.Evaluate(factor);
+     }
+}
