@@ -52,9 +52,10 @@ namespace Player
         public float moveCastRadius = 1f;
         public float groundOverlapRadius = 0.3f;
         [SerializeField] private LayerMask groundLayer;
-        [SerializeField] private float stunVelocityMin = 1f;
+        [SerializeField] private float stunFallHeight = 3f;
         [SerializeField] private float stunDuration;
         float currentStun;
+        float lastGroundedHeight;
 
         
 
@@ -101,19 +102,22 @@ namespace Player
 
         private void Update()
         {
-
+            bool wasgrounded = grounded;
             //// Check if Player is Grounded and snap put on Ground
-
+            float castDistance = playerHeight + (grounded ? slopeLenience : 0f);
             grounded = Physics.SphereCast(transform.position + new Vector3(0, playerHeight, 0), groundOverlapRadius, Vector3.down,
-             out RaycastHit hit, playerHeight + (grounded ? slopeLenience : 0f), groundLayer);
+             out RaycastHit hit, castDistance, groundLayer);
             
             if (grounded)
             {
-                if (fallVelocity > stunVelocityMin)
-                    currentStun = stunDuration;
+                // Just touched the ground
+                if(!wasgrounded)
+                    if (lastGroundedHeight - hit.point.y > stunFallHeight)
+                        currentStun = stunDuration;
 
                 fallVelocity = 0;
                 transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
+                lastGroundedHeight = transform.position.y;
             }
             else
             {
