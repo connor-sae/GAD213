@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -15,7 +16,7 @@ namespace Player
         public float moveTime = 0.5f;
         
         [SerializeField] private float inputBufferTime = 0.05f;
-        Vector2Int inputBuffered;
+        InputValue inputBuffered;
 
          [System.Serializable]
         public class ErpCurve2
@@ -69,7 +70,9 @@ namespace Player
         float lastRotation;
 
 
-       short moveDirection;
+        Vector2Int moveDirection;
+        int rotateDirection;
+
 
         public bool IsFalling()
         {
@@ -100,18 +103,19 @@ namespace Player
             lastMoveTime = -moveTime;
         }
 
+        bool lastMoveWasRotation;
         private void Update()
         {
             bool wasgrounded = grounded;
             //// Check if Player is Grounded and snap put on Ground
             float castDistance = playerHeight + (grounded ? slopeLenience : 0f);
             grounded = Physics.SphereCast(transform.position + new Vector3(0, playerHeight, 0), groundOverlapRadius, Vector3.down,
-             out RaycastHit hit, castDistance, groundLayer);
-            
+                        out RaycastHit hit, castDistance, groundLayer);
+
             if (grounded)
             {
                 // Just touched the ground
-                if(!wasgrounded)
+                if (!wasgrounded)
                     if (lastGroundedHeight - hit.point.y > stunFallHeight)
                         currentStun = stunDuration;
 
@@ -126,21 +130,21 @@ namespace Player
             }
 
             //move at the end if input buffered
-            if (inputBuffered != Vector2Int.zero && Time.time > lastMoveTime + moveTime && currentStun <= 0)
+            if (inputBuffered != null && Time.time > lastMoveTime + moveTime && currentStun <= 0)
             {
                 //print((inputBuffered != Vector2Int.zero) + " : " + (Time.time > lastMoveTime + moveTime) + " : " + (currentStun));
-                if (inputBuffered.x != 0)
-                    OnRotate((short)inputBuffered.x);
+                if (inputBuffered is RotateInput)
+                    OnRotate(inputBuffered as RotateInput);
                 else
-                    OnMove((short)inputBuffered.y);
-                    
-                inputBuffered = Vector2Int.zero;
+                    OnMove(inputBuffered as MoveInput);
+
+                inputBuffered = null;
             }
 
 
             //move player to target position using interpolation curves
 
-                float factor = (Time.time - lastMoveTime) / moveTime;
+            float factor = (Time.time - lastMoveTime) / moveTime;
 
             if (lastMoveWasRotation)
             {
@@ -155,17 +159,17 @@ namespace Player
             {
 
                 Vector2 erpPos = targetPosition - lastPosition;
-                
-                
+
+
                 erpPos *= moveInterpolation.Evaluate(factor);
                 transform.position = SwizzleFromXY(erpPos + lastPosition, transform.position.y);
 
             }
-            
-            if(factor < 1)
+
+            if (factor < 1)
             {
                 ViewBob(factor);
-                hudBobber.Bob(factor, lastMoveWasRotation, lastMoveWasRotation ? moveDirection : xBobDir);
+                hudBobber.Bob(factor, lastMoveWasRotation, xBobDir);//lastMoveWasRotation ? moveDirection : xBobDir);
             }
 
             currentStun = Mathf.Max(0, currentStun - Time.deltaTime);
@@ -182,20 +186,27 @@ namespace Player
             new Vector2((viewBobCurves.x.Evaluate(fac) - 0.5f) * 2 * xBobDir * viewBobMult.x, viewBobCurves.y.Evaluate(fac) * viewBobMult.y);
         }
 
-        bool lastMoveWasRotation;
-        public void OnMove(short dir)
+        public void OnMove(MoveInput moveInput)
         {
-            if (!CanMove(new Vector2Int(0, dir))) return;
+            if (!CanMove(moveInput)) return;
+
+            //rotate input by direction being faced
+            float theta = Mathf.Deg2Rad * -transform.rotation.eulerAngles.y;
+            Vector2 dir = moveInput.GetValue();
+            float x = dir.x * Mathf.Cos(theta) - dir.y * Mathf.Sin(theta);
+            float y = dir.x * Mathf.Sin(theta) + dir.y * Mathf.Cos(theta);
+            dir = new Vector2(x, y);
+            Debug.Log(dir);
 
             RaycastHit hit;
-            if (Physics.SphereCast(moveCastPoint.position, moveCastRadius, transform.forward * dir, out hit, gridSize + playerRadius))
+            if (Physics.SphereCast(moveCastPoint.position, moveCastRadius, SwizzleFromXY(dir), out hit, gridSize + playerRadius))
             {
                 if (!hit.collider.CompareTag(ElevatorTag))
                     return;
             }
             //ignore y component
             lastPosition = targetPosition;
-            targetPosition += SwizzleToXZ(transform.forward) * dir * gridSize;
+            targetPosition += dir * gridSize;
             //Debug
 
             //snap to grid 
@@ -205,16 +216,16 @@ namespace Player
             lastMoveTime = Time.time;
             xBobDir *= -1;
             lastMoveWasRotation = false;
-            moveDirection = dir;
+            //moveDirection = dir;
 
         }
 
-        private void OnRotate(short dir)
+        private void OnRotate(RotateInput rotateInput)
         {
-            if (!CanMove(new Vector2Int(dir, 0))) return;
+            if (!CanMove(rotateInput)) return;
 
             lastRotation = targetRotation;
-            targetRotation = transform.rotation.eulerAngles.y + dir * 90;
+            targetRotation = transform.rotation.eulerAngles.y + rotateInput.GetValue() * 90;
 
             //snap rotation to 90
             //mitigates floating point precision
@@ -237,10 +248,10 @@ namespace Player
             lastMoveTime = Time.time;
             xBobDir *= -1;
             lastMoveWasRotation = true;
-            moveDirection = dir;
+            rotateDirection = rotateInput.GetValue();
         }
 
-        private bool CanMove(Vector2Int dir)
+        private bool CanMove(InputValue input)
         {
             float nextMoveTime = lastMoveTime + moveTime + (currentStun > 0 ? stunDuration : 0);
 
@@ -248,7 +259,7 @@ namespace Player
             {
                 if (Time.time + inputBufferTime > nextMoveTime)
                 {
-                    inputBuffered = dir;
+                    inputBuffered = input;
                 }
                 return false;
             }

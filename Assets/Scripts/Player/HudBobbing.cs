@@ -25,9 +25,9 @@ public class HudBobbing : MonoBehaviour
         HudAnimator.SetBool("Stunned", stunned && stunRemaining > exitStunEarly);
     }
 
-    public void Bob(float factor, bool isRotation, short moveDirection)
+    public void Bob(float factor, bool isRotation, short bobDirection)
      {
-        float xPos = xBobEffector.Evaluate(factor) * moveDirection * bobMax.x;
+        float xPos = xBobEffector.Evaluate(factor) * bobDirection * bobMax.x;
         float yPos = yBobEffector.Evaluate(factor) * bobMax.y;
         //print(moveDirection);
 
@@ -35,7 +35,7 @@ public class HudBobbing : MonoBehaviour
 
         if(isRotation)
         {
-            float yRot = rotationEffector.Evaluate(factor) * moveDirection * rotationMax;
+            float yRot = rotationEffector.Evaluate(factor) * bobDirection * rotationMax;
 
             transform.localRotation = Quaternion.Euler(0, yRot, 0);
         }

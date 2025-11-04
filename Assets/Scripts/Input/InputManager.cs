@@ -1,4 +1,5 @@
 using System;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,8 +20,8 @@ public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputA
     }
 
 
-    public static event Action<short> OnPlayerMove;
-    public static event Action<short> OnPlayerRotate;
+    public static event Action<MoveInput> OnPlayerMove;
+    public static event Action<RotateInput> OnPlayerRotate;
 
     private void OnDisable()
     {
@@ -72,25 +73,36 @@ public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputA
     public void OnMoveUp(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
-            OnPlayerMove?.Invoke(1);
+            OnPlayerMove?.Invoke(new MoveInput(0, 1));
     }
 
     public void OnMoveDown(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
-            OnPlayerMove?.Invoke(-1);
+            OnPlayerMove?.Invoke(new MoveInput(0, -1));
     }
 
     public void OnMoveRight(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
-            OnPlayerRotate?.Invoke(1);
+            OnPlayerMove?.Invoke(new MoveInput(1, 0));
     }
 
     public void OnMoveLeft(InputAction.CallbackContext context)
     {
         if (context.phase == InputActionPhase.Performed)
-            OnPlayerRotate?.Invoke(-1);
+            OnPlayerMove?.Invoke(new MoveInput(-1, 0));
+    }
+    public void OnRotateRight(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+            OnPlayerRotate?.Invoke(new RotateInput(1));
+    }
+
+    public void OnRotateLeft(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Performed)
+            OnPlayerRotate?.Invoke(new RotateInput(-1));
     }
 
 
@@ -104,4 +116,38 @@ public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputA
     {
         //throw new NotImplementedException();
     }
+
+
 }
+public class InputValue
+{
+    protected object value;
+  
+}
+
+public class MoveInput : InputValue
+{
+    public MoveInput(int x, int y)
+    {
+        this.value = new Vector2Int(x, y);
+    }
+
+    public Vector2Int GetValue()
+    {
+        return (Vector2Int)value;
+    }
+
+}    
+
+public class RotateInput : InputValue
+{
+    public RotateInput(short value)
+    {
+        this.value = value;
+    }
+
+    public int GetValue()
+    {
+        return (short)value;
+    }
+}   
