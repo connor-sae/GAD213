@@ -1,9 +1,8 @@
 using System;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputActions.IUIActions
+public class InputManager : Singleton<InputManager>, InputActions.IPlayerActions//, InputActions.IUIActions
 {
     InputActions IA;
 
@@ -17,11 +16,24 @@ public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputA
 
             IA.Player.Enable();
         }
+        
     }
 
 
     public static event Action<MoveInput> OnPlayerMove;
     public static event Action<RotateInput> OnPlayerRotate;
+    public static event Action<Vector2> OnLookChanged;
+    public static event Action OnInteractStart;
+    public static event Action OnInteractEnd;
+    public static event Action OnInventoryToggle;
+    private Vector2 _mousePosition = Vector2.zero;
+    public static Vector2 mousePosition
+    {
+        get
+        {
+            return instance._mousePosition;
+        }
+    }
 
     private void OnDisable()
     {
@@ -32,26 +44,30 @@ public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputA
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        //throw new NotImplementedException();
-    }
-
-
-
-    public void OnAttack(InputAction.CallbackContext context)
-    {
-        //throw new NotImplementedException();
+        _mousePosition = context.ReadValue<Vector2>();
+        OnLookChanged?.Invoke(_mousePosition);
     }
 
 
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        //throw new NotImplementedException();
+        if (context.performed)
+            OnInteractStart?.Invoke();
+        else
+            OnInteractEnd?.Invoke();
     }
 
+    
+    public void OnADS(InputAction.CallbackContext context)
+    {
+        throw new NotImplementedException();
+    }
 
-
-
+    public void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed) OnInventoryToggle?.Invoke();
+    }
 
 
     public void OnCrouch(InputAction.CallbackContext context)
@@ -103,18 +119,6 @@ public class InputManager : MonoBehaviour, InputActions.IPlayerActions//, InputA
     {
         if (context.phase == InputActionPhase.Performed)
             OnPlayerRotate?.Invoke(new RotateInput(-1));
-    }
-
-
-
-    public void OnNext(InputAction.CallbackContext context)
-    {
-        //throw new NotImplementedException();
-    }
-
-    public void OnPrevious(InputAction.CallbackContext context)
-    {
-        //throw new NotImplementedException();
     }
 
 

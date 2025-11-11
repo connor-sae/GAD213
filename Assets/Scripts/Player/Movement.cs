@@ -52,7 +52,8 @@ namespace Player
         [SerializeField] private Transform moveCastPoint;
         public float moveCastRadius = 1f;
         public float groundOverlapRadius = 0.3f;
-        [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private LayerMask groundMask;
+        [SerializeField] private LayerMask envioronmentMask;
         [SerializeField] private float stunFallHeight = 3f;
         [SerializeField] private float stunDuration;
         float currentStun;
@@ -110,7 +111,7 @@ namespace Player
             //// Check if Player is Grounded and snap put on Ground
             float castDistance = playerHeight + (grounded ? slopeLenience : 0f);
             grounded = Physics.SphereCast(transform.position + new Vector3(0, playerHeight, 0), groundOverlapRadius, Vector3.down,
-                        out RaycastHit hit, castDistance, groundLayer);
+                        out RaycastHit hit, castDistance, groundMask);
 
             if (grounded)
             {
@@ -196,10 +197,9 @@ namespace Player
             float x = dir.x * Mathf.Cos(theta) - dir.y * Mathf.Sin(theta);
             float y = dir.x * Mathf.Sin(theta) + dir.y * Mathf.Cos(theta);
             dir = new Vector2(x, y);
-            Debug.Log(dir);
 
             RaycastHit hit;
-            if (Physics.SphereCast(moveCastPoint.position, moveCastRadius, SwizzleFromXY(dir), out hit, gridSize + playerRadius))
+            if (Physics.SphereCast(moveCastPoint.position, moveCastRadius, SwizzleFromXY(dir), out hit, gridSize + playerRadius, envioronmentMask))
             {
                 if (!hit.collider.CompareTag(ElevatorTag))
                     return;
