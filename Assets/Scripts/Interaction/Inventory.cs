@@ -22,6 +22,6 @@ public class Inventory : MonoBehaviour
     void ToggleInventory()
     {
         open = !open;
-        animator.SetBool("Open", open);
+        animator.SetBool("open", open);
     }
 }
