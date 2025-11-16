@@ -936,7 +936,7 @@ GameObject:
   - component: {fileID: 201874153}
   - component: {fileID: 201874155}
   m_Layer: 0
-  m_Name: Crate_Grabable
+  m_Name: Crate_Grabable_Large
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
