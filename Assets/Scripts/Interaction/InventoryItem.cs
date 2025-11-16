@@ -27,4 +27,6 @@ public class InventoryItem : MonoBehaviour
 
         transform.parent = null;
     }
+
+
 }

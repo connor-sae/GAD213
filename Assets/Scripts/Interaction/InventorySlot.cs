@@ -50,6 +50,6 @@ public class InventorySlot : MonoBehaviour
 
 public enum SlotType
 {
-    SMALL,
-    LARGE,
+    SMALL = 1,
+    LARGE = 2,
 }
