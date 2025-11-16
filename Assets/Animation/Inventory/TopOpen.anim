@@ -45,18 +45,18 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: 0, y: 0.73, z: 1.77}
-        inSlope: {x: 0, y: 0.097315274, z: -0.18455748}
-        outSlope: {x: 0, y: 0.097315274, z: -0.18455748}
+        value: {x: 0, y: 0.737, z: 1.77}
+        inSlope: {x: 0, y: 0.12123981, z: 0}
+        outSlope: {x: 0, y: 0.12123981, z: 0}
         tangentMode: 0
         weightedMode: 0
-        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
-        outWeight: {x: 0.33333334, y: 1, z: 0.038571477}
+        inWeight: {x: 0.33333334, y: 0.6389836, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 0.05
-        value: {x: 0, y: 0.6340194, z: 1.7739928}
-        inSlope: {x: 0, y: 0.7354531, z: 0.14802752}
-        outSlope: {x: 0, y: 0.7354531, z: 0.14802752}
+        value: {x: 0, y: 0.6340194, z: 1.7745695}
+        inSlope: {x: 0, y: 0.7354531, z: 0.090352885}
+        outSlope: {x: 0, y: 0.7354531, z: 0.090352885}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
@@ -187,13 +187,13 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.73
-        inSlope: 0.097315274
-        outSlope: 0.097315274
+        value: 0.737
+        inSlope: 0.12123981
+        outSlope: 0.12123981
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 1
+        inWeight: 0.6389836
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.05
         value: 0.6340194
@@ -227,12 +227,12 @@ AnimationClip:
       - serializedVersion: 3
         time: 0
         value: 1.77
-        inSlope: -0.18455748
-        outSlope: -0.18455748
-        tangentMode: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.038571477
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.06666667
         value: 1.775385
