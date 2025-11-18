@@ -5422,6 +5422,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1260963817}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1384538657 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8094444718678617313, guid: 2d52fea956b7ca54490345219497960e, type: 3}
+  m_PrefabInstance: {fileID: 6431723232430852821}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 363e5c1719b86644ab55bb88240ee8c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1413695764
 GameObject:
   m_ObjectHideFlags: 0
@@ -8935,6 +8946,10 @@ PrefabInstance:
       propertyPath: maxPeek.y
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 8772636652837047631, guid: 2d52fea956b7ca54490345219497960e, type: 3}
+      propertyPath: playerMovement
+      value: 
+      objectReference: {fileID: 1384538657}
     - target: {fileID: 8772636652837047631, guid: 2d52fea956b7ca54490345219497960e, type: 3}
       propertyPath: peekCurveX.m_Curve.Array.size
       value: 2

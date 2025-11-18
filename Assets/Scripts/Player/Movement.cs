@@ -83,7 +83,7 @@ namespace Player
         public bool IsStunned(out float stunTimeRemaining)
         {
             stunTimeRemaining = currentStun;
-            return stunDuration > 0;
+            return currentStun > 0;
         }
 
 
