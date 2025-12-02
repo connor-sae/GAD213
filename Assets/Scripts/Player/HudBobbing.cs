@@ -25,7 +25,7 @@ public class HudBobbing : MonoBehaviour
         HudAnimator.SetBool("Stunned", stunned && stunRemaining > exitStunEarly);
     }
 
-    public void Bob(float factor, bool isRotation, short bobDirection)
+    public void Bob(float factor, bool isRotation, int bobDirection)
      {
         float xPos = xBobEffector.Evaluate(factor) * bobDirection * bobMax.x;
         float yPos = yBobEffector.Evaluate(factor) * bobMax.y;

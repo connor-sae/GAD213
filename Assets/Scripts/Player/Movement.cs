@@ -4,19 +4,17 @@ using UnityEngine;
 
 namespace Player
 {
-    public class Movement : MonoBehaviour
+    public abstract class Movement : MonoBehaviour
     {
         [Header("Values")]
         public float gridSize = 5f;
 
-        public float vAccel = 9.8f;
+        public float vAccel = 1f;
         bool grounded;
         float fallVelocity = 0;
 
         public float moveTime = 0.5f;
         
-        [SerializeField] private float inputBufferTime = 0.05f;
-        InputValue inputBuffered;
 
          [System.Serializable]
         public class ErpCurve2
@@ -30,7 +28,7 @@ namespace Player
         
         public AnimationCurve moveInterpolation;
         public AnimationCurve rotationInterpolation;
-        float lastMoveTime = 0f;
+        protected float lastMoveTime = 0f;
 
 
         
@@ -56,7 +54,7 @@ namespace Player
         [SerializeField] private LayerMask envioronmentMask;
         [SerializeField] private float stunFallHeight = 3f;
         [SerializeField] private float stunDuration;
-        float currentStun;
+        protected float currentStun;
         float lastGroundedHeight;
 
         
@@ -65,14 +63,10 @@ namespace Player
 
         [SerializeField] private string ElevatorTag = "Elevator";
 
-        Vector2 targetPosition;
-        Vector2 lastPosition;
-        float targetRotation;
-        float lastRotation;
-
-
-        Vector2Int moveDirection;
-        int rotateDirection;
+        protected Vector2 targetPosition;
+        protected Vector2 lastPosition;
+        protected float targetRotation;
+        protected float lastRotation;
 
 
         public bool IsFalling()
@@ -87,16 +81,16 @@ namespace Player
         }
 
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
-            InputManager.OnPlayerMove += OnMove;
-            InputManager.OnPlayerRotate += OnRotate;
+            InputManager.OnPlayerMove += OnMovePressed;
+            InputManager.OnPlayerRotate += OnRotatePressed;
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
-            InputManager.OnPlayerMove -= OnMove;
-            InputManager.OnPlayerRotate -= OnRotate;
+            InputManager.OnPlayerMove -= OnMovePressed;
+            InputManager.OnPlayerRotate -= OnRotatePressed;
         }
 
         void Start()
@@ -104,8 +98,13 @@ namespace Player
             lastMoveTime = -moveTime;
         }
 
-        bool lastMoveWasRotation;
-        private void Update()
+        protected virtual float GetMoveFactor()
+        {
+            return (Time.time - lastMoveTime) / moveTime;
+        }
+
+        protected InputValue lastMove;
+        protected virtual void Update()
         {
             bool wasgrounded = grounded;
             //// Check if Player is Grounded and snap put on Ground
@@ -130,41 +129,29 @@ namespace Player
                 transform.position += new Vector3(0, -fallVelocity, 0);
             }
 
-            //move at the end if input buffered
-            if (inputBuffered != null && Time.time > lastMoveTime + moveTime && currentStun <= 0)
-            {
-                //print((inputBuffered != Vector2Int.zero) + " : " + (Time.time > lastMoveTime + moveTime) + " : " + (currentStun));
-                if (inputBuffered is RotateInput)
-                    OnRotate(inputBuffered as RotateInput);
-                else
-                    OnMove(inputBuffered as MoveInput);
-
-                inputBuffered = null;
-            }
-
 
             //move player to target position using interpolation curves
 
-            float factor = (Time.time - lastMoveTime) / moveTime;
+            float factor = GetMoveFactor();
+            
+            bool lastMoveWasRotation = lastMove is RotateInput;
 
-            if (lastMoveWasRotation)
+            if (lastMoveWasRotation) // last move was rotation
             {
                 float erpRot = targetRotation - lastRotation;
 
 
-
                 erpRot *= rotationInterpolation.Evaluate(factor);
                 transform.rotation = Quaternion.Euler(0, erpRot + lastRotation, 0);
+
             }
             else
             {
-
                 Vector2 erpPos = targetPosition - lastPosition;
 
 
                 erpPos *= moveInterpolation.Evaluate(factor);
                 transform.position = SwizzleFromXY(erpPos + lastPosition, transform.position.y);
-
             }
 
             if (factor < 1)
@@ -180,16 +167,20 @@ namespace Player
         
         
 
-        short xBobDir = 1;
-        private void ViewBob(float fac)
+        protected short xBobDir = 1;
+        protected void ViewBob(float fac)
         {
             viewBobber.localPosition =
             new Vector2((viewBobCurves.x.Evaluate(fac) - 0.5f) * 2 * xBobDir * viewBobMult.x, viewBobCurves.y.Evaluate(fac) * viewBobMult.y);
         }
 
-        public void OnMove(MoveInput moveInput)
+        protected abstract void OnMovePressed(MoveInput moveInput);
+
+        protected abstract void OnRotatePressed(RotateInput rotateInput);
+
+        protected void Move(MoveInput moveInput)
         {
-            if (!CanMove(moveInput)) return;
+            if (!CanMove(moveInput, GetNextMoveTime())) return;
 
             //rotate input by direction being faced
             float theta = Mathf.Deg2Rad * -transform.rotation.eulerAngles.y;
@@ -215,17 +206,17 @@ namespace Player
 
             lastMoveTime = Time.time;
             xBobDir *= -1;
-            lastMoveWasRotation = false;
+            lastMove = moveInput;
             //moveDirection = dir;
 
         }
 
-        private void OnRotate(RotateInput rotateInput)
+        protected virtual void Rotate(RotateInput rotateInput)
         {
-            if (!CanMove(rotateInput)) return;
+            if (!CanMove(rotateInput, GetNextMoveTime())) return;
 
             lastRotation = targetRotation;
-            targetRotation = transform.rotation.eulerAngles.y + rotateInput.GetValue() * 90;
+            targetRotation = targetRotation + rotateInput.GetValue() * 90;
 
             //snap rotation to 90
             //mitigates floating point precision
@@ -247,20 +238,14 @@ namespace Player
 
             lastMoveTime = Time.time;
             xBobDir *= -1;
-            lastMoveWasRotation = true;
-            rotateDirection = rotateInput.GetValue();
+            lastMove = rotateInput;
         }
 
-        private bool CanMove(InputValue input)
+        protected virtual bool CanMove(InputValue input, float nextMoveTime)
         {
-            float nextMoveTime = lastMoveTime + moveTime + (currentStun > 0 ? stunDuration : 0);
-
+            
             if (Time.time < nextMoveTime)
             {
-                if (Time.time + inputBufferTime > nextMoveTime)
-                {
-                    inputBuffered = input;
-                }
                 return false;
             }
             if (currentStun > 0)
@@ -275,7 +260,24 @@ namespace Player
             return true;
         }
 
+        public float GetNextMoveTime()
+        {
+            return lastMoveTime + moveTime + (currentStun > 0 ? stunDuration : 0);
+        }
 
+        
+        protected void MoveOrRotate(InputValue inputValue)
+        {
+            if(inputValue is MoveInput)
+            {
+                Move(inputValue as MoveInput);
+            }
+            else
+            {
+                Rotate(inputValue as RotateInput);
+            }
+        }
+        
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.yellow;

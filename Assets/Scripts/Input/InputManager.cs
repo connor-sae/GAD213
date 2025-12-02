@@ -22,6 +22,8 @@ public class InputManager : Singleton<InputManager>, InputActions.IPlayerActions
 
     public static event Action<MoveInput> OnPlayerMove;
     public static event Action<RotateInput> OnPlayerRotate;
+    public static event Action<MoveInput> OnPlayerMoveReleased;
+    public static event Action<RotateInput> OnPlayerRotateReleased;
     public static event Action<Vector2> OnLookChanged;
     public static event Action OnInteractStart;
     public static event Action OnInteractEnd;
@@ -85,48 +87,57 @@ public class InputManager : Singleton<InputManager>, InputActions.IPlayerActions
         //throw new NotImplementedException();
     }
 
+    private void InvokeMove(InputActionPhase phase, MoveInput moveInput)
+    {
+        if (phase == InputActionPhase.Performed)
+            OnPlayerMove?.Invoke(moveInput);
+        else
+            if(phase == InputActionPhase.Canceled)
+                OnPlayerMoveReleased?.Invoke(moveInput);
+    }
+    private void InvokeRotate(InputActionPhase phase, RotateInput rotateInput)
+    {
+        if (phase == InputActionPhase.Performed)
+            OnPlayerRotate?.Invoke(rotateInput);
+        else
+            if(phase == InputActionPhase.Canceled)
+                OnPlayerRotateReleased?.Invoke(rotateInput);
+    }
 
     public void OnMoveUp(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-            OnPlayerMove?.Invoke(new MoveInput(0, 1));
+        InvokeMove(context.phase, new MoveInput(0, 1));
     }
 
     public void OnMoveDown(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-            OnPlayerMove?.Invoke(new MoveInput(0, -1));
+        InvokeMove(context.phase, new MoveInput(0, -1));
     }
 
     public void OnMoveRight(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-            OnPlayerMove?.Invoke(new MoveInput(1, 0));
+        InvokeMove(context.phase, new MoveInput(1, 0));
     }
 
     public void OnMoveLeft(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-            OnPlayerMove?.Invoke(new MoveInput(-1, 0));
+        InvokeMove(context.phase, new MoveInput(-1, 0));
     }
     public void OnRotateRight(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-            OnPlayerRotate?.Invoke(new RotateInput(1));
+        InvokeRotate(context.phase, new RotateInput(1));
     }
 
     public void OnRotateLeft(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-            OnPlayerRotate?.Invoke(new RotateInput(-1));
+        InvokeRotate(context.phase, new RotateInput(-1));
     }
 
 
 }
 public class InputValue
 {
-    protected object value;
-  
+    public object value {get; protected set;}
 }
 
 public class MoveInput : InputValue
