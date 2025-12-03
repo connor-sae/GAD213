@@ -152,6 +152,15 @@ public class MoveInput : InputValue
         return (Vector2Int)value;
     }
 
+    public override bool Equals(object obj)
+    {
+        if(obj is MoveInput)
+        {
+            return (obj as MoveInput).GetValue() == GetValue();
+        }
+        return false;
+    }
+
 }    
 
 public class RotateInput : InputValue
@@ -164,5 +173,14 @@ public class RotateInput : InputValue
     public int GetValue()
     {
         return (short)value;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if(obj is RotateInput)
+        {
+            return (obj as RotateInput).GetValue() == GetValue();
+        }
+        return false;
     }
 }   

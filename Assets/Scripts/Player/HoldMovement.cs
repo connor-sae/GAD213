@@ -10,6 +10,7 @@ namespace Player
         [Tooltip("If the input held for shorter than this time after the previous movement it will revert that movement")]
         [SerializeField] private float inputAcceptanceThreshold;
         private InputValue activeInput;
+        private Stack<InputValue> storedInput = new Stack<InputValue>(6);
 
         #region Enable / Disable
 
@@ -55,7 +56,6 @@ namespace Player
                 if(activeInput != null)
                 {
                     MoveOrRotate(activeInput);
-                    
                 }
             }
 
@@ -72,11 +72,17 @@ namespace Player
                 return base.GetMoveFactor();
         }
 
-
+        
         protected override void OnMovePressed(MoveInput moveInput)
         {
             if(activeInput != null)
-                OnMoveReleased(activeInput as MoveInput);
+            {
+                if(activeInput.Equals(moveInput)) // released the current movement
+                    if(Time.time - lastMoveTime <= inputAcceptanceThreshold) // within revert threshold
+                        RevertMove(moveInput);
+
+                storedInput.Push(activeInput);
+            }
 
             activeInput = moveInput;
         }
@@ -84,31 +90,45 @@ namespace Player
         protected override void OnRotatePressed(RotateInput rotateInput)
         {
             if(activeInput != null)
-                OnRotateReleased(activeInput as RotateInput);
+            {
+                if(activeInput.Equals(rotateInput)) // released the current movement
+                    if(Time.time - lastMoveTime <= inputAcceptanceThreshold) // within revert threshold
+                        RevertRotate(rotateInput);
+
+                storedInput.Push(activeInput);
+            }
 
             activeInput = rotateInput;
         }
 
         private void OnMoveReleased(MoveInput moveInput)
         {
-            if((Vector2Int)lastMove.value == moveInput.GetValue()) // released the current move
+            if(activeInput.Equals(moveInput)) // released the current movement
             {
                 if(Time.time - lastMoveTime <= inputAcceptanceThreshold) // within revert threshold
                     RevertMove(moveInput);
 
-                activeInput = null;
+                activeInput = storedInput.Pop();
+            }
+            else
+            {
+                storedInput.Remove(moveInput);
             }
         }
 
         private void OnRotateReleased(RotateInput rotateInput)
         {
-            if((lastMove as RotateInput).GetValue() == rotateInput.GetValue()) // released the current move
+            if(activeInput.Equals(rotateInput)) // released the current move
             {
                 Debug.Log("Released matches");
                 if(Time.time - lastMoveTime <= inputAcceptanceThreshold) // within revert threshold
                     RevertRotate(rotateInput);   
 
-                activeInput = null;
+                activeInput = storedInput.Pop();
+            }
+            else
+            {
+                storedInput.Remove(rotateInput);
             }
         }
 

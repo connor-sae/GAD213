@@ -5,7 +5,7 @@ using UnityEngine;
 public class CursorPeeking : MonoBehaviour
 {
 
-    [SerializeField] private Movement playerMovement;
+    [SerializeField] private MovementSwapper movementSwapper;
     [SerializeField] private Transform cursorPeekTransform;
     [SerializeField] private AnimationCurve peekCurveX;
     [SerializeField] private AnimationCurve peekCurveY;
@@ -42,7 +42,7 @@ public class CursorPeeking : MonoBehaviour
 
     void Update()
     {
-        if(!playerMovement.IsStunned(out float _stunTimeRemaining))
+        if(!movementSwapper.GetActiveMovement().IsStunned(out float _stunTimeRemaining))
             cursorPeekTransform.localRotation = Quaternion.Slerp(cursorPeekTransform.localRotation, _targetRotation, peekLerpSpeed * Time.deltaTime);
     }
 }

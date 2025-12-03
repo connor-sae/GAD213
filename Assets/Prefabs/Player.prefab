@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a38a540a7f7dcd4cbee099dfb02a79c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CursorPeeking
-  playerMovement: {fileID: 5401493336256879755}
+  movementSwapper: {fileID: 3018060242696810601}
   cursorPeekTransform: {fileID: 7514378169686686593}
   peekCurveX:
     serializedVersion: 2
@@ -1337,6 +1337,7 @@ GameObject:
   - component: {fileID: 5401493336256879755}
   - component: {fileID: 8213888030531736400}
   - component: {fileID: 187897226141337287}
+  - component: {fileID: 3018060242696810601}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1841,6 +1842,21 @@ MonoBehaviour:
   holdDistanceLerpSpeed: 8
   inventoryInteractUpscale: 1.2
   cursorAnimator: {fileID: 7764748117984163523}
+--- !u!114 &3018060242696810601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5085032747741794169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f78d22382bc7304aa903625b2641189, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovementSwapper
+  usingTapMovement: 0
+  tapMovement: {fileID: 5401493336256879755}
+  holdMovement: {fileID: 8213888030531736400}
 --- !u!1 &5190842419396251359
 GameObject:
   m_ObjectHideFlags: 0
@@ -2460,6 +2476,7 @@ GameObject:
   - component: {fileID: 6557288845569587434}
   - component: {fileID: 4856674713569957717}
   - component: {fileID: 5292932181785013546}
+  - component: {fileID: 6266266416859553334}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
@@ -2557,10 +2574,37 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.65
+  m_Height: 2.33
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.06, z: 0.089529514}
+--- !u!54 &6266266416859553334
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7705995334576346152}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7778173602217246813
 GameObject:
   m_ObjectHideFlags: 0
@@ -2639,7 +2683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b82e74bf85372941be5ffb045fa4d3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  movement: {fileID: 5401493336256879755}
+  movementSwapper: {fileID: 3018060242696810601}
   xBobEffector:
     serializedVersion: 2
     m_Curve:

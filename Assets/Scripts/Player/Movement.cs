@@ -103,6 +103,7 @@ namespace Player
             return (Time.time - lastMoveTime) / moveTime;
         }
 
+
         protected InputValue lastMove;
         protected virtual void Update()
         {
@@ -276,6 +277,36 @@ namespace Player
             {
                 Rotate(inputValue as RotateInput);
             }
+        }
+
+        public struct Targets
+        {
+            public Vector3 targetPos;
+            public Vector3 oldPos;
+
+            public float targetRot;
+            
+            public float oldRot;
+        }
+
+        public void SetTargets(Targets targets)
+        {
+            targetPosition = targets.targetPos;
+            lastPosition = targets.oldPos;
+            targetRotation = targets.targetRot;
+            lastRotation = targets.oldRot;
+        }
+
+        public Targets GetTargets()
+        {
+            Targets targets = new();
+            
+            targets.targetPos = targetPosition;
+            targets.oldPos = lastPosition;
+            targets.targetRot = targetRotation;
+            targets.oldRot = lastRotation;
+
+            return targets;
         }
         
         private void OnDrawGizmos()

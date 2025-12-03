@@ -4,7 +4,7 @@ using UnityEngine;
 public class HudBobbing : MonoBehaviour
 {
 
-    [SerializeField] private Movement movement;
+    [SerializeField] private MovementSwapper movementSwapper;
     [SerializeField] private AnimationCurve xBobEffector;
     [SerializeField] private AnimationCurve yBobEffector;
     [SerializeField] private Vector2 bobMax;
@@ -18,8 +18,8 @@ public class HudBobbing : MonoBehaviour
 
     private void Update()
     {
-        HudAnimator.SetBool("Falling", movement.IsFalling());
-        bool stunned = movement.IsStunned(out float stunRemaining);
+        HudAnimator.SetBool("Falling", movementSwapper.GetActiveMovement().IsFalling());
+        bool stunned = movementSwapper.GetActiveMovement().IsStunned(out float stunRemaining);
         //print(stunRemaining);
 
         HudAnimator.SetBool("Stunned", stunned && stunRemaining > exitStunEarly);
