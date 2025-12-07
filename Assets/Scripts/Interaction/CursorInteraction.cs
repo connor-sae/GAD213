@@ -44,12 +44,16 @@ public class CursorInteraction : MonoBehaviour
         if (_hoverGrabable != null)
             Grab(_hoverGrabable, _hoverPos);
 
-        if (_hoverSlot != null)
+        if (_hoverSlot != null && _hoverSlot.storedItem != null)
         {
-            storingItem = true;
             _heldGrabable = _hoverSlot.storedItem.GetComponent<Grabable>();
-            _heldGrabable.transform.localScale *= inventoryInteractUpscale;
-            cursorAnimator.SetBool("holding", true);
+
+            if (_heldGrabable != null)
+            {
+                storingItem = true;
+                _heldGrabable.transform.localScale *= inventoryInteractUpscale;
+                cursorAnimator.SetBool("holding", true);
+            }
         }    
     }
     
@@ -141,6 +145,7 @@ public class CursorInteraction : MonoBehaviour
 
     private void StoreItem(InventoryItem item, InventorySlot slot)
     {
+        Debug.Log(slot);
         if (slot.TryStore(item)) // if successfully stored
         {
             _heldGrabable?.OnReleased();
@@ -162,6 +167,5 @@ public class CursorInteraction : MonoBehaviour
         _hoverPos = item.transform.position;
         Grab(item.GetComponent<Grabable>(), item.transform.position + Vector3.up * grabHeight);
 
-        _hoverSlot = null;
     }
 }

@@ -18,8 +18,9 @@ public class InventorySlot : MonoBehaviour
             return false;
 
         _oldScale = item.transform.localScale;
-        item.transform.localScale = item.transform.localScale * scaleFactor;//Vector3.Lerp(item.transform.localScale, Vector3.one * scaleFactor, 0.8f);
-        item.Store(this);
+        item.transform.localScale = item.transform.localScale * scaleFactor;
+
+        OnStoreItem(item);
         
         storedItem = item;
 
@@ -27,7 +28,13 @@ public class InventorySlot : MonoBehaviour
 
     }
 
-    private bool CanStore(InventoryItem item)
+    protected virtual void OnStoreItem(InventoryItem item)
+    {
+        
+        item.Store(this, item.storageAnchorPoint);
+    }
+
+    protected virtual bool CanStore(InventoryItem item)
     {
         return storedItem == null && item.slotType == slotType && !item.stored;
     }
@@ -37,10 +44,16 @@ public class InventorySlot : MonoBehaviour
         InventoryItem _item = storedItem;
         storedItem = null;
 
-        _item.Release();
+        OnReleaseItem(_item);
+
         _item.transform.localScale = _oldScale;
 
         return _item;
+    }
+
+    protected virtual void OnReleaseItem(InventoryItem item)
+    {
+        item.Release();
     }
 
 
