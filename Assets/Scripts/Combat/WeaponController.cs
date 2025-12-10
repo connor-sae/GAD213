@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WeaponController : MonoBehaviour
@@ -7,6 +8,27 @@ public class WeaponController : MonoBehaviour
 
     bool fireHeld;
     bool firing;
+    Vector2 _mousePos;
+
+    [SerializeField] Transform rayOrigin;
+    [SerializeField] LayerMask targetableMask;
+
+
+    #region Enable / Disable
+    void OnEnable()
+    {
+        InputManager.OnLookChanged += OnLookChanged;
+    }
+    void OnDisable()
+    {
+        InputManager.OnLookChanged -= OnLookChanged;
+    }
+    #endregion
+
+    public void OnLookChanged(Vector2 newMousePos)
+    {
+        _mousePos = newMousePos;
+    }
 
     public WeaponItem ActiveWeapon { 
         get
@@ -30,6 +52,14 @@ public class WeaponController : MonoBehaviour
 
         WeaponDataSO _data = ActiveWeapon.data;
 
+        yield return StartCoroutine(SpoolingUp());
+        if(!fireHeld && _data.automatic)
+        {
+            firing = false;
+            yield break;
+        }
+
+
         do
         {
             firing = true;
@@ -38,7 +68,11 @@ public class WeaponController : MonoBehaviour
             while (burstCount < _data.burstSize) // fire all bullets in a burst
             {
                 burstCount++;
-                OnFireSingle();
+
+                if(_data.isRaycast)
+                    OnFireSingleRay();
+                else
+                    OnFireSingleObject();
 
                 if(_data.fireRate <= 0) // catch if firerate will throw error
                 {
@@ -57,8 +91,19 @@ public class WeaponController : MonoBehaviour
         firing = false;
     }
 
+    private IEnumerator SpoolingUp()
+    {
+        float startTime = Time.time;
+        while(Time.time - startTime <= ActiveWeapon.data.spoolupTime)
+        {
+            if(!fireHeld)
+                yield break;
+        }
+        
+    }
+
     
-    private void OnFireSingle()
+    private void OnFireSingleObject()
     {
         GameObject _bullet = ActiveWeapon.data.bulletBrefab;
 
@@ -87,6 +132,11 @@ public class WeaponController : MonoBehaviour
 
         
         Instantiate(_bullet, _shotPoint.position, _newRotation);
+    }
+
+    private void OnFireSingleRay()
+    {
+        Debug.Log("fire Ray");
     }
 
     public void FireStart()

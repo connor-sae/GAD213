@@ -3,6 +3,7 @@ using UnityEngine;
 public class CursorInteraction : MonoBehaviour
 {
     private Vector2 _mousePos;
+    public bool canPickup;
 
     [SerializeField] private Transform cursorAnchor;
 
@@ -34,13 +35,16 @@ public class CursorInteraction : MonoBehaviour
     }
     #endregion
 
-    private void OnLookChanged(Vector2 newMousePos)
+    public void OnLookChanged(Vector2 newMousePos)
     {
         _mousePos = newMousePos;
     }
 
-    private void OnGrabPressed()
+    public void OnGrabPressed()
     {
+        if(!canPickup)
+            return;
+        
         if (_hoverGrabable != null)
             Grab(_hoverGrabable, _hoverPos);
 
@@ -67,7 +71,7 @@ public class CursorInteraction : MonoBehaviour
     }
 
 
-    private void OnRelease()
+    public void OnRelease()
     {
         _heldGrabable?.OnReleased();
         if (storingItem)
@@ -99,48 +103,58 @@ public class CursorInteraction : MonoBehaviour
         cursorAnchor.position = newCursorAnchorPos;
         cursorAnchor.rotation = transform.rotation;
 
-        Vector3 _rayOrigin = Camera.main.transform.position;
-        Vector3 _rayDirection = cursorAnchor.position - _rayOrigin;
-        _rayDirection.Normalize();
-
         _hoverGrabable = null;
 
-        if (Physics.Raycast(Camera.main.transform.position, _rayDirection, out RaycastHit hit, maxGrabDistance))
+        if(canPickup)
         {
-            if (hit.collider.TryGetComponent(out Grabable grabable)) // if hit grabable
-            {
-                _hoverGrabable = grabable;
-                _hoverPos = hit.point;
-            }
 
-            _hoverSlot = hit.collider.GetComponent<InventorySlot>();
+            Vector3 _rayOrigin = Camera.main.transform.position;
+            Vector3 _rayDirection = cursorAnchor.position - _rayOrigin;
+            _rayDirection.Normalize();
 
-            if (_hoverSlot != null) // if hit inventory Slot
+            
+            if (Physics.Raycast(Camera.main.transform.position, _rayDirection, out RaycastHit hit, maxGrabDistance))
             {
-                if (_oldSlot != _hoverSlot) // just started storing
+                if (hit.collider.TryGetComponent(out Grabable grabable)) // if hit grabable
                 {
-
-                    if (_heldGrabable != null && _heldGrabable.TryGetComponent(out InventoryItem item)) // is storable
-                    {
-                        if (item.stored)
-                            UnStoreItem(_oldSlot);
-                        StoreItem(item, _hoverSlot);
-                    }
+                    _hoverGrabable = grabable;
+                    _hoverPos = hit.point;
                 }
 
+                _hoverSlot = hit.collider.GetComponent<InventorySlot>();
+
+                if (_hoverSlot != null) // if hit inventory Slot
+                {
+                    if (_oldSlot != _hoverSlot) // just started storing
+                    {
+
+                        if (_heldGrabable != null && _heldGrabable.TryGetComponent(out InventoryItem item)) // is storable
+                        {
+                            if (item.stored)
+                                UnStoreItem(_oldSlot);
+                            StoreItem(item, _hoverSlot);
+                        }
+                    }
+
+                }
             }
+            else
+                _hoverSlot = null;
+
+            if ( _hoverSlot == null && storingItem)
+            {
+                UnStoreItem(_oldSlot);
+            }
+
+
+            _oldSlot = _hoverSlot;
+            cursorAnimator.SetBool("hovering", _hoverGrabable != null || (_hoverSlot != null && _hoverSlot.storedItem != null));
         }
         else
-            _hoverSlot = null;
-
-        if ( _hoverSlot == null && storingItem)
         {
-            UnStoreItem(_oldSlot);
+            
         }
 
-
-        _oldSlot = _hoverSlot;
-        cursorAnimator.SetBool("hovering", _hoverGrabable != null || (_hoverSlot != null && _hoverSlot.storedItem != null));
     }
 
     private void StoreItem(InventoryItem item, InventorySlot slot)
