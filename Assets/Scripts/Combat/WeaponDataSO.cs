@@ -5,13 +5,11 @@ public class WeaponDataSO : ScriptableObject
 {
     public new string name;
 
-    [Header("Assignables")]
-
-    public GameObject bulletBrefab;
-
     [Header("Ammo")]
 
     public int maxAmmo;
+    public bool countBurstAmmo = true;
+    public int ammoConsumption = 1;
 
     [Header("Firing")]
 
@@ -21,11 +19,18 @@ public class WeaponDataSO : ScriptableObject
     public float fireRate = 1;
     public bool automatic = false;
     public float spreadAngle;
+    public float range = 10f;
+    public int passthrough = 1;
 
     [Header("Raycast")]
     
     public bool isRaycast;
-    public float raycastrange;
+    public float castRaduis = 0.1f;
+
+    [Header("Object")]
+
+    public Bullet bulletBrefab;
+    public float bulletSpeed = 1f;
 
     [Header("Burst")]
 

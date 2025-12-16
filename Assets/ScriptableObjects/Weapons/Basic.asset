@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487e4c45d1e39be4781ddfdb94806a6a, type: 3}
+  m_Name: Basic
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponDataSO
+  name: 
+  maxAmmo: 0
+  countBurstAmmo: 1
+  ammoConsumption: 1
+  damage: 0
+  spoolupTime: 0
+  fireRate: 1
+  automatic: 0
+  spreadAngle: 0
+  range: 10
+  isRaycast: 0
+  castRaduis: 0.1
+  bulletBrefab: {fileID: 0}
+  bulletSpeed: 1
+  burstSize: 1
+  burstDelay: 0

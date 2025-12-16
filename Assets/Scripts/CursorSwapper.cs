@@ -2,17 +2,39 @@ using UnityEngine;
 
 public class CursorSwapper : MonoBehaviour
 {
-    private bool weaponEnabled;
+    public bool weaponEnabled;
 
     [SerializeField] private CursorInteraction interaction;
     [SerializeField] private WeaponController weaponController;
+    [SerializeField] private Animator cursorSwapAnimator;
+
+    [SerializeField] private float TransitionTime = 0.15f;
+
+    private void OnEnable()
+    {
+        InputManager.OnADSStart += EnableWeapon;
+        InputManager.OnADSEnd += DisableWeapon;
+
+        float animSpeed = TransitionTime == 0 ? Mathf.Infinity : 1 / TransitionTime;
+        cursorSwapAnimator.speed = animSpeed;
+        DisableWeapon();
+    }
+
+    private void OnDisable()
+    {
+        InputManager.OnADSStart -= EnableWeapon;
+        InputManager.OnADSEnd -= DisableWeapon;
+    }
+
 
     private void EnableWeapon()
     {
         weaponEnabled = true;
 
-        interaction.enabled = false;
+        interaction.canPickup = false;
         weaponController.enabled = true;
+
+        cursorSwapAnimator.SetBool("ADS", true);
     }
 
 
@@ -20,7 +42,9 @@ public class CursorSwapper : MonoBehaviour
     {
         weaponEnabled = false;
 
-        interaction.enabled = true;
-        interaction.enabled = false;
+        interaction.canPickup = true;
+        weaponController.enabled = false;
+
+        cursorSwapAnimator.SetBool("ADS", false);
     }
 }

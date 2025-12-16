@@ -2,13 +2,19 @@ using UnityEngine;
 
 public class WeaponItem : InventoryItem
 {
-    [SerializeField] private Animator weaponAnimator;
+    public Animator weaponAnimator;
 
     public Transform weaponHoldPoint;
     public Transform bulletShootPoint;
     public WeaponDataSO data;
 
-    public int currentAmmo;
+    [HideInInspector] public int currentAmmo;
+
+    private void Start()
+    {
+        if(data != null)
+            currentAmmo = data.maxAmmo;
+    }
 
     public override void Store(InventorySlot slot, Transform anchorPoint = null)
     {

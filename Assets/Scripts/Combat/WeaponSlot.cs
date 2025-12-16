@@ -3,14 +3,15 @@ using UnityEngine;
 public class WeaponSlot : InventorySlot
 {
     [SerializeField] private Animator weaponAnimator;
-    public WeaponDataSO data;
+    //public WeaponDataSO data;
 
     protected override void OnStoreItem(InventoryItem item)
     {
 
         item.Store(this, (item as WeaponItem).weaponHoldPoint);
 
-        //weaponAnimator?.SetBool("stored", true);
+        if(weaponAnimator != null)
+            weaponAnimator.SetBool("stored", true);
     }
 
     protected override bool CanStore(InventoryItem item)
@@ -22,6 +23,7 @@ public class WeaponSlot : InventorySlot
     {
         base.OnReleaseItem(item);
 
-        //weaponAnimator?.SetBool("stored", false);
+        if (weaponAnimator != null)
+            weaponAnimator.SetBool("stored", false);
     }
 }

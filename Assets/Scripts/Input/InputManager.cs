@@ -28,6 +28,8 @@ public class InputManager : Singleton<InputManager>, InputActions.IPlayerActions
     public static event Action OnInteractStart;
     public static event Action OnInteractEnd;
     public static event Action OnInventoryToggle;
+    public static event Action OnADSStart;
+    public static event Action OnADSEnd;
     private Vector2 _mousePosition = Vector2.zero;
     public static Vector2 mousePosition
     {
@@ -63,7 +65,10 @@ public class InputManager : Singleton<InputManager>, InputActions.IPlayerActions
     
     public void OnADS(InputAction.CallbackContext context)
     {
-        throw new NotImplementedException();
+        if (context.performed)
+            OnADSStart.Invoke();
+        else
+            OnADSEnd?.Invoke();
     }
 
     public void OnInventory(InputAction.CallbackContext context)

@@ -3,7 +3,7 @@ using UnityEngine;
 public class CursorInteraction : MonoBehaviour
 {
     private Vector2 _mousePos;
-    public bool canPickup;
+    public bool canPickup = true;
 
     [SerializeField] private Transform cursorAnchor;
 

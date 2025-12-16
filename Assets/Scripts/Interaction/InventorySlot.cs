@@ -8,7 +8,7 @@ public class InventorySlot : MonoBehaviour
     public SlotType slotType;
     public float scaleFactor;
 
-    //[HideInInspector] 
+    [HideInInspector] 
     public InventoryItem storedItem;
 
     private Vector3 _oldScale;
