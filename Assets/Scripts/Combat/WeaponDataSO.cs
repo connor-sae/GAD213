@@ -35,7 +35,7 @@ public class WeaponDataSO : ScriptableObject
     [Header("Burst")]
 
     public int burstSize = 1;
-    public int burstDelay = 0;
+    public float burstDelay = 0;
 
 
 }
