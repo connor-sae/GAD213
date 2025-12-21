@@ -70,6 +70,7 @@ public class WeaponController : MonoBehaviour
         if (!firing) // do not fire if still firing
             if (ActiveWeapon.currentAmmo <= 0)
             {
+                Debug.Log("Out of Ammo");
                 //out of ammo
                 //play click sound / prompt reload
             }
@@ -88,7 +89,8 @@ public class WeaponController : MonoBehaviour
 
         WeaponDataSO _data = ActiveWeapon.data;
 
-        yield return StartCoroutine(SpoolingUp());
+        spoolStartTime = Time.time;
+        yield return new WaitWhile(SpoolingUp);
         if(!fireHeld && _data.automatic)
         {
             firing = false;
@@ -129,15 +131,17 @@ public class WeaponController : MonoBehaviour
 
         firing = false;
     }
+    float spoolStartTime;
 
-    private IEnumerator SpoolingUp()
+    private bool SpoolingUp()
     {
-        float startTime = Time.time;
-        while(Time.time - startTime <= ActiveWeapon.data.spoolupTime)
+        if(Time.time - spoolStartTime <= ActiveWeapon.data.spoolupTime)
         {
-            if(!fireHeld)
-                yield break;
+            if (!fireHeld)
+                return false;
+            return true;
         }
+        return false;
         
     }
 
@@ -170,8 +174,8 @@ public class WeaponController : MonoBehaviour
         float _spread = _data.spreadAngle;
 
         float _xAngle = Random.Range(-_spread, _spread);
-        float _yAngle = 0;
-        float _zAngle = Random.Range(-_spread, _spread);
+        float _yAngle = Random.Range(-_spread, _spread);
+        float _zAngle = 0;
 
         Quaternion spreadRotation = Quaternion.Euler(_xAngle, _yAngle, _zAngle);
 
@@ -219,7 +223,6 @@ public class WeaponController : MonoBehaviour
     private void FireObject(WeaponDataSO _data, Vector3 target, Quaternion spreadRotationOffset)
     {
         Bullet _bullet = _data.bulletBrefab;
-        _bullet.Init(_data, targetableMask);
 
         if (_bullet == null)
         {
@@ -235,7 +238,7 @@ public class WeaponController : MonoBehaviour
         Quaternion _newRotation = Quaternion.LookRotation(direction, Vector3.up) * spreadRotationOffset;
 
 
-        Instantiate(_bullet, _shotPoint.position, _newRotation);
+        Instantiate(_bullet, _shotPoint.position, _newRotation).GetComponent<Bullet>()?.Init(_data, targetableMask);
     }
 
     #endregion
