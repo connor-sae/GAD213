@@ -94,7 +94,14 @@ public class CursorInteraction : MonoBehaviour
     void Update()
     {
         //smooth Hold distance
-        _currentHoldDistance = Mathf.Lerp(_currentHoldDistance, targetHoldDistance, holdDistanceLerpSpeed * Time.deltaTime);
+        float _clippedHoldDistance = targetHoldDistance;
+
+        //clip hold distance if there is ground in the way
+        Ray ray = Camera.main.ScreenPointToRay(_mousePos);
+        if (Physics.Raycast(ray, out RaycastHit clip, targetHoldDistance, 1 << 6)) // 1 << 6 -> ground layer
+            _clippedHoldDistance = clip.distance;
+
+            _currentHoldDistance = Mathf.Lerp(_currentHoldDistance, _clippedHoldDistance, holdDistanceLerpSpeed * Time.deltaTime);
 
 
         Ray mouseRay = Camera.main.ScreenPointToRay(_mousePos);
@@ -177,7 +184,7 @@ public class CursorInteraction : MonoBehaviour
         InventoryItem item = slot.RetrieveItem();
 
         float grabHeight = item.GetComponent<Collider>().bounds.extents.z  * item.transform.localScale.y   * item.transform.localScale.y ; // grab slightly higher        
-        item.transform.position = cursorAnchor.position - Vector3.up * grabHeight;
+        item.transform.position = cursorAnchor.position;// - Vector3.up * grabHeight;
         _hoverPos = item.transform.position;
         Grab(item.GetComponent<Grabable>(), item.transform.position + Vector3.up * grabHeight);
 

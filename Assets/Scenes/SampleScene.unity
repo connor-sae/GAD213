@@ -1610,12 +1610,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.449
       objectReference: {fileID: 0}
     - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.45
+      value: 0.67
       objectReference: {fileID: 0}
     - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1648,6 +1660,10 @@ PrefabInstance:
     - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582141944912636168, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5411701488446444482, guid: 7363fa43b7cdb984b8dc12e86a5642a1, type: 3}
       propertyPath: m_Name
@@ -10403,6 +10419,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 2767356208311191390, guid: 2d52fea956b7ca54490345219497960e, type: 3}
+      propertyPath: scaleFactor
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 3081870807359422880, guid: 2d52fea956b7ca54490345219497960e, type: 3}
       propertyPath: m_Layer
       value: 5
@@ -10447,6 +10467,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 5924445175848801516, guid: 2d52fea956b7ca54490345219497960e, type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
     - target: {fileID: 5924445175848801516, guid: 2d52fea956b7ca54490345219497960e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -10518,6 +10542,10 @@ PrefabInstance:
     - target: {fileID: 7778173602217246813, guid: 2d52fea956b7ca54490345219497960e, type: 3}
       propertyPath: m_Layer
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8541695951347728775, guid: 2d52fea956b7ca54490345219497960e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.025
       objectReference: {fileID: 0}
     - target: {fileID: 8692618343091016365, guid: 2d52fea956b7ca54490345219497960e, type: 3}
       propertyPath: m_Layer
@@ -10780,7 +10808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSlot
   storePoint: {fileID: 6688006731331191369}
   slotType: 2
-  scaleFactor: 1
+  scaleFactor: 0.6666667
   storedItem: {fileID: 0}
   weaponAnimator: {fileID: 6688006731331191370}
 --- !u!4 &6688006731331191369 stripped
